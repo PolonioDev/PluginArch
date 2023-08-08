@@ -1,0 +1,65 @@
+{
+  "type": "module",
+  "name": "pluginarch",
+  "version": "0.0.1",
+  "description": "Plugin architecture core powered by events for any apps.",
+  "homepage": "https://github.com/PolonioDev/PluginArch#readme",
+  "author": "PolonioDev <dev.polonio84@gmail.com>",
+  "typings": "dist/index.d.ts",
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.mjs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PolonioDev/PluginArch/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PolonioDev/PluginArch.git"
+  },
+  "scripts": {
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development --color --progress",
+    "start": "tsx ./src/index.ts",
+    "dev": "nodemon -e ts --exec mocha",
+    "prepare": "npm run build",
+    "release": "np",
+    "test": "mocha",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint -p tsconfig.json",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm test && npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,json}": "npm run lint:fix"
+  },
+  "keywords": [
+    "Events",
+    "Plugins",
+    "Microkernel",
+    "Architecture"
+  ],
+  "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.4.8",
+    "chai": "^4.3.6",
+    "esbuild-loader": "^3.1.0",
+    "fork-ts-checker-webpack-plugin": "^8.0.0",
+    "husky": "^8.0.1",
+    "mocha": "^10.1.0",
+    "nodemon": "^3.0.1",
+    "np": "^7.6.2",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "tsx": "^3.12.7",
+    "typescript": "^4.8.4",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

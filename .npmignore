@@ -1,0 +1,22 @@
+.gitignore
+.gitattributes
+.editorconfig
+.eslintignore
+.prettier
+mocharc.json
+aqu.config.ts
+tsconfig.json
+node_modules
+.vscode
+.github
+tests
+example
+storage
+notes.md
+changelog.md
+test.ts
+
+
+# Sources
+src
+src/playground.ts
