@@ -1,20 +1,17 @@
 import PluginArch from './dist/main.mjs';
-// import PluginArch from 'pluginarch';
 
-
-class MyCore extends PluginArch {
+class Logger extends PluginArch {
     constructor(plugin) {
         super();
-
         // Load new Plugin
         this.use(plugin);
 
-        // Using MyCore Basic Logic
-        this.log('Core is running...');
+        // Using Logger Basic Logic
+        this.write('Core is running...');
     }
 
-    // MyCore Basic Logic
-    log(message) {
+    // Logger method to write in console
+    write(message) {
         const parsedMessage = this.emit('log', { message }).message;
         console.log(parsedMessage);
     }
@@ -28,11 +25,11 @@ const plugin = {
 
     on: {
         // My listener to modify all "log" events
-        log: ({ payload: { message } }) => {
-            // Changing the payload
+        log: ({message}) => {
+            // We modify the payload
             return { message: message.toUpperCase() };
         }
     }
 };
 
-const core = new MyCore(plugin);
+const log = new Logger(plugin);

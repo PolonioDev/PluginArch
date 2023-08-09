@@ -1,4 +1,4 @@
-import IPayload from './IPayload';
+import type IPayload from './IPayload';
 
-type IQueueEvent = [string, IPayload][];
+type IQueueEvent = Array<[string, IPayload]>;
 export default IQueueEvent;

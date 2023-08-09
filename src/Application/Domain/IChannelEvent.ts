@@ -1,2 +1,2 @@
-type IChannelEvent = 'response'|'request'|'close';
+type IChannelEvent = 'response' | 'request' | 'close';
 export default IChannelEvent;

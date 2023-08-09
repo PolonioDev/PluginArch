@@ -1,3 +1,2 @@
-export default interface IListenerRule {
-    [key: string]: any;
-};
+type IListenerRule = Record<string, any>;
+export default IListenerRule;

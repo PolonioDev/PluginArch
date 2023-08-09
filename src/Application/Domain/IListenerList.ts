@@ -1,9 +1,5 @@
-import IListener from './IListener';
+import type IListener from './IListener';
+import IListenerType from './IListenerType';
 
-export default interface IListenerList {
-    [type: string]: {
-        [name: string]: {
-            [id: string]: IListener;
-        };
-    };
-}
+type IListenerList = Record<string, Record<string, Record<string, IListener>>>;
+export default IListenerList;

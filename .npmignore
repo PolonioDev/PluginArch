@@ -3,18 +3,20 @@
 .editorconfig
 .eslintignore
 .prettier
-mocharc.json
-aqu.config.ts
+.mocharc.json
+webpack.config.js
 tsconfig.json
 node_modules
 .vscode
 .github
 tests
+example.js
 example
 storage
 notes.md
-changelog.md
+CHANGELOG.md
 test.ts
+pnpm-lock.yaml
 
 
 # Sources

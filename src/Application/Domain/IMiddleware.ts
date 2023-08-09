@@ -1,27 +1,22 @@
-import IPayload from './IPayload';
+import type IListenerHandler from './IListenerHandler';
 
-export default interface IMiddleware {
-    name: string;
-    // version: string;
-    description: string;
-    author: string;
-    // license: string;
-    // repository?: string;
-    // bugs?: string;
-    // homepage?: string;
+type IMiddleware = {
+	name: string;
+	// Version: string;
+	description: string;
+	author: string;
+	// License: string;
+	// repository?: string;
+	// bugs?: string;
+	// homepage?: string;
 
-    // requiredAccess: string[];
-    // init: () => void;
+	// requiredAccess: string[];
+	// init: () => void;
 
-    on?: {
-        [event: string]: (payload: IPayload) => void|IPayload;
-    };
+	on?: Record<string, IListenerHandler>;
 
-    once?: {
-        [event: string]: (payload: IPayload) => void|IPayload;
-    };
+	once?: Record<string, IListenerHandler>;
 
-    onChannel?: {
-        [event: string]: (payload: IPayload) => void|IPayload;
-    };
+	onChannel?: Record<string, IListenerHandler>;
 };
+export default IMiddleware;

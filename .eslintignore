@@ -1,0 +1,14 @@
+dist
+node_modules
+package.json
+README.md
+example.js
+.vscode
+.git
+.gitattributes
+.mocharc.json
+.gitignore
+CHANGELOG.md
+LICENSE
+pnpm-lock.yaml
+tsconfig.json

@@ -1,2 +1,2 @@
-type IListenerType = 'on'|'once'|'channel';
+type IListenerType = 'on' | 'once' | 'channel';
 export default IListenerType;
