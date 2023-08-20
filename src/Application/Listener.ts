@@ -46,10 +46,25 @@ export default class Listener extends IListener {
 	}
 
 	public release(payload: IPayload): IPayload {
-		return this._handler(payload, this.context) ?? payload;
+		if(!this.canExecute(payload)) return payload;
+		const response = this._handler(payload, this.context) ?? payload;
+		if(this.type === 'once') this.remove();
+		return response;
 	}
 
 	public remove(): void {
 		this._store.remove(this);
+	}
+
+	protected canExecute(payload: IPayload): boolean {
+		let can = true;
+		Object.keys(this.rule).forEach(rule => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const expect = this.rule[ rule ];
+			if(payload[ rule ] !== expect){
+				can = false;
+			}
+		});
+		return can;
 	}
 }

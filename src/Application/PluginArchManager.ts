@@ -13,7 +13,7 @@ export default abstract class PluginArchManager extends EventQueue {
 	protected midStore: ListenerStore = new ListenerStore(this);
 	protected allowedEvents: string[] = [];
 
-	protected use(middleware: IMiddleware): void {
+	public use(middleware: IMiddleware): void {
 		const { on = {}, once = {}, onChannel: channel = {} } = middleware;
 		const listeners = { on, once, channel };
 		for (const type in listeners) {

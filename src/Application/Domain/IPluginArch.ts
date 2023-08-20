@@ -14,7 +14,7 @@ export default abstract class IPluginArch {
   public abstract once(event: string, callback: IListenerHandler): IListener;
   public abstract request(content: IPayload): Promise<IPayload>;
 
-  protected abstract use(middleware: IMiddleware): void;
+  public abstract use(middleware: IMiddleware): void;
   protected abstract emit(event: string, payload: IPayload, id?: string): IPayload;
   protected abstract intercept(event_name: string, payload: IPayload): IPayload;
   protected abstract onRequest(callback: IRequestHandler): IListener;

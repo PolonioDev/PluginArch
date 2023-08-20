@@ -43,7 +43,9 @@ module.exports = {
         'computed-property-spacing': ['error', 'always'],
         'object-curly-spacing': ['error', 'always'],
         'array-bracket-spacing': ['error', 'always'],
-        'linebreak-style': ['error', 'unix']
+        'linebreak-style': ['error', 'unix'],
+        '@typescript-eslint/no-for-in-array': 'off',
+        '@typescript-eslint/consistent-type-definitions': ['error', 'interface']
       },
     },
   ],

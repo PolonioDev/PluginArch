@@ -1,25 +1,55 @@
 import IPluginArch from '@Domain/IPluginArch';
-import type IQueueEvent from '@Domain/IQueueEvent';
+import type IEventQueueStore from '@Domain/IEventQueueStore';
 import type IPayload from '@Domain/IPayload';
 
 export default abstract class EventQueue extends IPluginArch {
-	protected onDequeue = false;
-	protected queue: IQueueEvent = [];
+	protected queueStore: IEventQueueStore = {};
 
-	enqueue(event: string, payload: IPayload): void {
-		this.queue.push([ event, payload ]);
+	enqueue(key: string, event: string, payload: IPayload, id?: string): void {
+		this.queue(key).content.push({
+			event, payload, id
+		});
 	}
 
-	dequeue(): void {
-		if (this.onDequeue) {
-			return;
+	enqueueOnChannel(key: string, event: string, payload: IPayload, id?: string): void {
+		this.queue(key).channel.push({
+			event, payload, id
+		});
+	}
+
+	dequeue(key: string): boolean {
+		let isFinish = false;
+		if(!this.queue(key).isBusy){
+			this.queue(key).isBusy = true;
+			
+			this.queue(key).content.map(({ event, payload, id }) => {
+				this.emit(event, payload, id);
+				return true;
+			});
+
+			this.queue(key).channel.map(({ event, payload, id }) => {
+				this.emit(event, payload, id);
+				return true;
+			});
+
+			this.queue(key).isBusy = false;
+			isFinish = true;
 		}
 
-		this.onDequeue = true;
-		this.queue.forEach(([ event, paylaod ]) => {
-			this.emit(event, paylaod);
-		});
-		this.queue = [];
-		this.onDequeue = false;
+
+		return isFinish;
 	}
+
+	private queue(key: string) {
+		if(!this.queueStore[ key ]){
+			this.queueStore[ key ] = {
+				isBusy: false,
+				content: [],
+				channel: []
+			};
+		}
+
+		return this.queueStore[ key ];
+	}
+
 }
