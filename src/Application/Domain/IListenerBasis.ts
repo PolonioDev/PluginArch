@@ -8,5 +8,5 @@ type IListenerBasis = {
 	type: IListenerType;
 	handler: IListenerHandler;
 	rule?: IListenerRule;
-};
+}
 export default IListenerBasis;

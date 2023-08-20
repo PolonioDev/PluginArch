@@ -18,5 +18,5 @@ type IMiddleware = {
 	once?: Record<string, IListenerHandler>;
 
 	onChannel?: Record<string, IListenerHandler>;
-};
+}
 export default IMiddleware;
