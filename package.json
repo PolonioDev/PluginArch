@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "pluginarch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Plugin architecture core powered by events for any apps.",
   "homepage": "https://github.com/PolonioDev/PluginArch#readme",
   "author": "PolonioDev <dev.polonio84@gmail.com>",
