@@ -1,6 +1,7 @@
 import type IListenerHandler from './IListenerHandler';
 
 type IMiddleware = {
+	[key: string]: any;
 	name: string;
 	// Version: string;
 	description: string;

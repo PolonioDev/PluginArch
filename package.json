@@ -30,7 +30,8 @@
     "prepublishOnly": "npm run test && npm run lint",
     "preversion": "npm run test && npm run lint",
     "version": "npm run lint:fix && git add .",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "playground": "nodemon -e ts --exec tsx ./playground"
   },
   "husky": {
     "hooks": {
