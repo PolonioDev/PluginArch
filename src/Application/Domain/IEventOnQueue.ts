@@ -1,6 +1,6 @@
 import type IPayload from './IPayload';
 
-interface IEventOnQueue {
+type IEventOnQueue = {
   payload: IPayload,
   event: string,
   id?: string

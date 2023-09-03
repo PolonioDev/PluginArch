@@ -45,6 +45,8 @@ module.exports = {
         'array-bracket-spacing': ['error', 'always'],
         'linebreak-style': ['error', 'unix'],
         '@typescript-eslint/no-for-in-array': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off'
       },
     },
   ],

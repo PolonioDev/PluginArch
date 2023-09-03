@@ -1,55 +1,47 @@
 import IPluginArch from '@Domain/IPluginArch';
 import type IEventQueueStore from '@Domain/IEventQueueStore';
-import type IPayload from '@Domain/IPayload';
+import type IEventOnQueue from '@Domain/IEventOnQueue';
 
 export default abstract class EventQueue extends IPluginArch {
 	protected queueStore: IEventQueueStore = {};
 
-	enqueue(key: string, event: string, payload: IPayload, id?: string): void {
-		this.queue(key).content.push({
-			event, payload, id
-		});
-	}
-
-	enqueueOnChannel(key: string, event: string, payload: IPayload, id?: string): void {
-		this.queue(key).channel.push({
-			event, payload, id
-		});
+	enqueue(key: string, event: IEventOnQueue, isChannel=false): void {
+		const args = this.parseFor('enqueue', { key, event, isChannel, preventDefault: false });
+		if(args.preventDefault) return;
+		this.queue(key)[ args.isChannel? 'channel':'content' ].push(args.event);
 	}
 
 	dequeue(key: string): boolean {
-		let isFinish = false;
-		if(!this.queue(key).isBusy){
-			this.queue(key).isBusy = true;
-			
-			this.queue(key).content.map(({ event, payload, id }) => {
-				this.emit(event, payload, id);
-				return true;
-			});
+		const { preventDefault } = this.parseFor('dequeue', { key, preventDefault: false });
+		let isFinish = preventDefault;
+		if(!isFinish && !this.queue(key).isBusy){
 
-			this.queue(key).channel.map(({ event, payload, id }) => {
-				this.emit(event, payload, id);
-				return true;
+			this.queue(key).isBusy = true;
+			const queues = [ 'content', 'channel' ];
+			queues.forEach(queue => {
+				this.queue(key)[ queue ].forEach(({ event, payload, id }: IEventOnQueue) => {
+					this.emit(event, payload, id);
+				});
 			});
 
 			this.queue(key).isBusy = false;
 			isFinish = true;
 		}
 
-
 		return isFinish;
 	}
 
 	private queue(key: string) {
-		if(!this.queueStore[ key ]){
-			this.queueStore[ key ] = {
+		const { key: parsedKey, content } = this.parseFor('queue', { key, content: undefined });
+
+		if(content !== undefined && !this.queueStore[ parsedKey ]){
+			this.queueStore[ parsedKey ] = {
 				isBusy: false,
 				content: [],
 				channel: []
 			};
 		}
 
-		return this.queueStore[ key ];
+		return content ?? this.queueStore[ parsedKey ];
 	}
-
 }

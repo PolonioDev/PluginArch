@@ -9,13 +9,19 @@ import type IPluginArch from '@Domain/IPluginArch';
 import type ListenerStore from '@Application/ListenerStore';
 
 export default class Listener extends IListener {
+	static createID(size=1): string {
+		let id = '';
+		for(let i=0; i<size; i++) id += Math.random().toString(36).substring(2, 9);
+		return id;
+	}
+
 	protected _name: string;
 	protected _type: string;
 	protected _id: string;
 	protected _rule?: IListenerRule;
 	protected _handler: IListenerHandler;
 	protected _store: ListenerStore;
-	protected context: any;
+	protected context;
 
 	constructor(eventDetails: IListenerBasis, store: ListenerStore, context: IPluginArch) {
 		super();
@@ -24,8 +30,8 @@ export default class Listener extends IListener {
 		this._type = type;
 		this._rule = rule;
 		this._store = store;
-		this._id = id ?? Math.random().toString(36).substring(2, 9);
-		this._handler = handler.bind(this);
+		this._id = id ?? Listener.createID(4);
+		this._handler = handler;
 		this.context = context;
 	}
 
@@ -47,24 +53,26 @@ export default class Listener extends IListener {
 
 	public release(payload: IPayload): IPayload {
 		if(!this.canExecute(payload)) return payload;
-		const response = this._handler(payload, this.context) ?? payload;
+		const response = this._handler(payload, this.context, this) ?? payload;
 		if(this.type === 'once') this.remove();
 		return response;
 	}
 
 	public remove(): void {
 		this._store.remove(this);
-	}
+	} 
 
 	protected canExecute(payload: IPayload): boolean {
 		let can = true;
-		Object.keys(this.rule).forEach(rule => {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const expect = this.rule[ rule ];
-			if(payload[ rule ] !== expect){
-				can = false;
-			}
-		});
+		if(this.rule){
+			Object.keys(this.rule).forEach(rule => {
+				const expect = this.rule[ rule ] as unknown;
+				if(payload[ rule ] !== expect){
+					can = false;
+				}
+			});
+		}
+
 		return can;
 	}
 }

@@ -1,16 +1,14 @@
-/* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable no-unused-expressions */
 import 'mocha'; 
 import { expect } from 'chai';
 import PluginArch from 'index';
 import sinon from 'sinon';
-import type IMiddleware from '@Domain/IMiddleware';
+import type IPlugin from '@Domain/IPlugin';
 import type IListenerHandler from '@Domain/IListenerHandler';
 
 class Logger extends PluginArch {
-  constructor(plugin: IMiddleware){ 
+  constructor(plugin: IPlugin){ 
     super();
     this.use(plugin);
   }
@@ -30,19 +28,19 @@ class Logger extends PluginArch {
 }
 let middlewareWriteLaunch = false;
 let middlewareAnyLaunch = false;
-const plugin: IMiddleware = {
+const plugin: IPlugin = {
   name: 'MyTestingPlugin',
   description: 'Plugin for test funcionality',
   author: 'PolonioDev',
-  on: {
-    write({ message }) {
-      return middlewareWriteLaunch ? { message: message as string + ' > intercept' } : undefined;
-    },
-    any({ message }){
-      return middlewareAnyLaunch ? {
-         message: message as string + ' > interceptAny'
-      } : undefined;
-    }
+  
+  onWriteHandler({ message }) {
+    return middlewareWriteLaunch ? 
+      { message: message as string + ' > intercept' } : undefined;
+  },
+  onAnyHandler({ message }){
+    return middlewareAnyLaunch ? {
+       message: message as string + ' > interceptAny'
+    } : undefined;
   }
 };
 
@@ -87,7 +85,7 @@ describe('PluginArch [./src/index.ts]', () => {
   it('request & response', async () => {
     const onResponseRecived = sinon.spy();
     log.onReq((id, content, context) => {
-      content.message = content.message.toUpperCase();
+      content.message = (content.message as string).toUpperCase();
       context.response(id, content).then(onResponseRecived);
     });
 
@@ -120,7 +118,7 @@ describe('PluginArch [./src/index.ts]', () => {
     expect(callback.calledTwice, 'Should not execute deleted listeners').to.be.true;
   });
 
-  it('interceptAny > intercept > on > once', () => {
+  it('Hierarchy of executions', () => {
     middlewareAnyLaunch = true;
     middlewareWriteLaunch = true;
     log.once('any', (payload) => {

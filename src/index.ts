@@ -7,6 +7,7 @@ import type IRequestHandler from '@Domain/IRequestHandler';
 // Application
 import PluginArchManager from '@Application/PluginArchManager';
 import type Listener from '@Application/Listener';
+import type IListenerBasis from '@Domain/IListenerBasis';
 
 /**
  * Abstract class representing a plugin architecture.
@@ -170,7 +171,7 @@ export default abstract class PluginArch extends PluginArchManager {
    * @returns The analyzed payload after being intercepted and processed.
    * If no event handler modifies the payload it is returned.
    */
-  protected emitToChannel(event_name: IChannelEvent, payload: IPayload, id?: string): IPayload {
+  protected emitToChannel(event_name: IChannelEvent, payload: IPayload={}, id?: string): IPayload {
     let parsedPayload = this.intercept(event_name, payload, true);
     if (id) {
       return this.emitToChannelByID(event_name, id, parsedPayload);
@@ -239,13 +240,7 @@ export default abstract class PluginArch extends PluginArchManager {
    */
   protected async response(id: string, content: IPayload): Promise<void> {
     return new Promise<void>(resolve => {
-      this.onChannel(
-        'close',
-        () => {
-          resolve();
-        },
-        id
-      );
+      this.onChannel('close', ()=>{ resolve(); }, id);
       this.emitToChannel('response', content, id);
     });
   }

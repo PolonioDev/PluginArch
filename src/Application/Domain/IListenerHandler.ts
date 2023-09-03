@@ -1,5 +1,5 @@
+import type IListener from './IListener';
 import type IPayload from './IPayload';
-import type IPluginArch from './IPluginArch';
 
-type IListenerHandler = (payload: IPayload, context) => void | IPayload;
+type IListenerHandler = (payload: IPayload, context, event: IListener) => void | IPayload;
 export default IListenerHandler;

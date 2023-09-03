@@ -1,6 +1,6 @@
 import type IListenerHandler from './IListenerHandler';
 
-type IMiddleware = {
+type IPlugin = {
 	[key: string]: any;
 	name: string;
 	// Version: string;
@@ -12,12 +12,6 @@ type IMiddleware = {
 	// homepage?: string;
 
 	// requiredAccess: string[];
-	// init: () => void;
-
-	on?: Record<string, IListenerHandler>;
-
-	once?: Record<string, IListenerHandler>;
-
-	onChannel?: Record<string, IListenerHandler>;
+	init?: () => void;
 }
-export default IMiddleware;
+export default IPlugin;
