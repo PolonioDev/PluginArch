@@ -86,4 +86,14 @@ export default class ListenerStore extends IListenerStore {
 
 		return this.events[ type ][ event_name ][ id ];
 	}
+
+	public eachAll(handle: IEachHandler, type?: IListenerType): void {
+		const types = type? [ type ] : Object.keys(this.events);
+		types.forEach(eventType => {
+			Object.keys(this.events[ eventType ])
+				.forEach(event => {
+					this.each(event, (listener) => handle(listener), eventType as IListenerType);
+				});
+		})
+	}
 }

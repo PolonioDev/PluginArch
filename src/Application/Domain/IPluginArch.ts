@@ -5,6 +5,7 @@ import type IRequestHandler from './IRequestHandler';
 import type IListenerHandler from './IListenerHandler';
 import type IListenerStore from './IListenerStore';
 import type IPlugin from './IPlugin';
+import type IListenerRule from './IListenerRule';
 
 export default abstract class IPluginArch {
   protected abstract allowedEvents: string[];
@@ -17,9 +18,9 @@ export default abstract class IPluginArch {
   public abstract use(middleware: IPlugin): void;
   protected abstract emit(event: string, payload: IPayload, id?: string): IPayload;
   protected abstract intercept(event_name: string, payload: IPayload): IPayload;
-  protected abstract onRequest(callback: IRequestHandler): IListener;
+  protected abstract onRequest(callback: IRequestHandler, rule?: IListenerRule): IListener;
   protected abstract response(id: string, content: IPayload): Promise<void>;
   protected abstract emitToChannel(event_name: IChannelEvent, payload: IPayload, id?: string): IPayload;
-  protected abstract onChannel(event_name: string, callback: IListenerHandler, id?: string): IListener;
+  protected abstract onChannel(event_name: string, callback: IListenerHandler, rule?: IListenerRule, id?: string): IListener;
   protected abstract parseFor<T>(action: IChannelEvent, defaultPayload: T): T;
 }

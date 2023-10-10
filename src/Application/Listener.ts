@@ -51,6 +51,10 @@ export default class Listener extends IListener {
 		return this._rule ?? {};
 	}
 
+	get handler(): IListenerHandler {
+		return this._handler;
+	}
+
 	public release(payload: IPayload): IPayload {
 		if(!this.canExecute(payload)) return payload;
 		const response = this._handler(payload, this.context, this) ?? payload;

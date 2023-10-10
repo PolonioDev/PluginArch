@@ -4,10 +4,11 @@ import type IListenerHandler from '@Domain/IListenerHandler';
 import type IListenerRule from '@Domain/IListenerRule';
 import type IPayload from '@Domain/IPayload';
 import type IRequestHandler from '@Domain/IRequestHandler';
+import type IListenerType from '@Domain/IListenerType';
+import type IAnyPayload from '@Domain/IAnyPayload';
 // Application
 import PluginArchManager from '@Application/PluginArchManager';
 import type Listener from '@Application/Listener';
-import type IListenerBasis from '@Domain/IListenerBasis';
 
 /**
  * Abstract class representing a plugin architecture.
@@ -89,6 +90,39 @@ export default abstract class PluginArch extends PluginArchManager {
   }
 
   /**
+   * Import listeners from another PluginArch class.
+   * @param {PluginArch} to - The "to" parameter is an object of type PluginArch.
+   */
+  public import(to: PluginArch) {
+    this.store.eachAll(listener => {
+      const { type, name, rule, handler } = listener;
+      to[ type as IListenerType ].call(name, handler, rule);
+    });
+    this.midStore.eachAll(listener => {
+      const { type, name, rule, handler } = listener;
+      to[ type as IListenerType ].call(name, handler, rule);
+    });
+  }
+
+ /**
+  * The relay method in the PluginArch class is used to relay events from one instance
+  * of PluginArch to another. It listens for all events on the from instance and
+  * emits the same event on the current instance.
+  * @param {PluginArch} from - Class that emits the events that will be broadcast to the current class.
+  * @example
+  * const plugin1 = new PluginArch();
+  * const plugin2 = new PluginArch();
+  *
+  * // Relay events from plugin1 to plugin2
+  * plugin2.relay(plugin1);
+  */
+  public relay(from: PluginArch) {
+    from.on('any', ({ event, payload }, _context, listener) => {
+      this.emit(event as string, payload as IPayload, listener.id);
+    });
+  }
+
+  /**
    * This function intercepts the payload of a certain event and is
    * processed by the event handlers in the plugins and provided by
    * the user. It always processes generic handlers first, then event
@@ -102,7 +136,8 @@ export default abstract class PluginArch extends PluginArchManager {
    * @returns The processed payload.
    */
   protected intercept(event_name: string, payload: IPayload, isChannel = false): IPayload {
-    let parsedPayload: IPayload = event_name === 'any' ? payload : this.interceptAny(payload, isChannel);
+    let parsedPayload: IPayload = event_name === 'any' ? payload : 
+      this.interceptAny({ event: event_name, payload }, isChannel);
     this.midStore.each(
       event_name,
       event => {
@@ -126,7 +161,7 @@ export default abstract class PluginArch extends PluginArchManager {
    *  is intended for channel type events. The default is false.
    * @returns The processed payload.
    */
-  protected interceptAny(payload: IPayload, isChannel = false): IPayload {
+  protected interceptAny(payload: IAnyPayload, isChannel = false): IPayload {
     let parsedPayload = this.intercept('any', payload, isChannel);
     this.store.each(
       'any',
@@ -136,7 +171,7 @@ export default abstract class PluginArch extends PluginArchManager {
       },
       isChannel ? 'channel' : undefined
     );
-    return parsedPayload;
+    return parsedPayload.payload;
   }
 
   /**
@@ -197,12 +232,13 @@ export default abstract class PluginArch extends PluginArchManager {
    * sure what you are doing, specifying this parameter can cause identifier collisions.
    * @returns A listener that can be used to unsubscribe from the event.
    */
-  protected onChannel(event_name: string, callback: IListenerHandler, id?: string): Listener {
+  protected onChannel(event_name: string, callback: IListenerHandler, rule?: IListenerRule, id?: string): Listener {
     const event = this.store.add({
       name: event_name,
       type: 'channel',
       handler: callback,
-      id
+      id,
+      rule
     });
     return event;
   }
@@ -215,10 +251,10 @@ export default abstract class PluginArch extends PluginArchManager {
    * @param callback The callback function to be executed when a request is received.
    * @returns A listener that can be used to unsubscribe from the event.
    */
-  protected onRequest(callback: IRequestHandler): Listener {
+  protected onRequest(callback: IRequestHandler, rule?: IListenerRule): Listener {
     return this.onChannel('request', ({ id, content }, context) => {
       callback.call(this, id as string, content as IPayload, context);
-    });
+    }, rule);
   }
 
   /**
@@ -240,7 +276,7 @@ export default abstract class PluginArch extends PluginArchManager {
    */
   protected async response(id: string, content: IPayload): Promise<void> {
     return new Promise<void>(resolve => {
-      this.onChannel('close', ()=>{ resolve(); }, id);
+      this.onChannel('close', ()=>{ resolve(); }, {}, id);
       this.emitToChannel('response', content, id);
     });
   }

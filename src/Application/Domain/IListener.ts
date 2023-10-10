@@ -15,6 +15,7 @@ export default abstract class IListener {
 	abstract get type(): string;
 	abstract get id(): string;
 	abstract get rule(): IListenerRule;
+	abstract get handler(): IListenerHandler;
 	public abstract release(payload: IPayload): IPayload;
 	public abstract remove(): void;
 }
